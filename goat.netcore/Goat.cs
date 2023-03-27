@@ -1,4 +1,5 @@
-﻿using goat.netcore.Ordinal;
+﻿using goat.netcore.Models;
+using goat.netcore.Ordinal;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 using NBitcoin.RPC;
@@ -17,30 +18,17 @@ namespace goat.netcore
 {
     public class Goat {
 
-
+        /// <summary>
+        /// The HTTP client for API requests
+        /// </summary>
         private static readonly HttpClient _httpClient = new();
 
+        #region Constants
         /// <summary>
-        /// Gets the inscription data from a locally hosted Bitcoin core node using RPC
+        /// First the string ord is pushed, to disambiguate inscriptions from other uses of envelopes.
         /// </summary>
-        /// <param name="bitcoinTxId"></param>
-        /// <returns></returns>
-        public string ProcessRawTx(string bitcoinTxId) {
-            // query nBitcoin with a bitcoin transaction id
-            /*var tx = NBitcoin.Transaction.Parse(bitcoinTxId, Network.Main);
-
-            // get witness data from a bitcoin transaction
-            var witness = tx.Inputs[0].WitScript;
-
-            IEnumerable<byte[]> pushes = witness.Pushes;
-            if (pushes.Count() >= 5) { // "ord"
-
-                // Convert UTF8 to string
-                var utf8_inscruption = Encoding.UTF8.GetString(pushes.ElementAt(5));
-                return utf8_inscruption;
-            }*/
-            return null;
-        }
+        private static readonly string ORDINAL_HEADER = "ord";
+        #endregion
 
         /// <summary>
         /// Gets the inscription data from a blockchain data provider API
@@ -48,53 +36,77 @@ namespace goat.netcore
         /// <param name="bitcoinTxId"></param>
         /// <param name="bcDataProviderType"></param>
         /// <returns></returns>
-        public async Task<OrdinalData> CreateAPIQuery(string bitcoinTxId, BcDataProviderType bcDataProviderType) {
-            // Create a HTTP request
-            using (var request = new HttpRequestMessage()) {
-                request.Method = HttpMethod.Get;
+        public static async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, BcDataProviderType bcDataProviderType) {
+            if (bcDataProviderType == BcDataProviderType.BitcoinCoreRPC) {
+                //  Gets the inscription data from a locally hosted Bitcoin core node using RPC
 
-                request.RequestUri = new Uri(string.Format(bcDataProviderType.Description(), bitcoinTxId));
+                // query nBitcoin with a bitcoin transaction id
+                /*var tx = NBitcoin.Transaction.Parse(bitcoinTxId, Network.Main);
 
-                try {
-                    using (var response = await _httpClient.SendAsync(request)) {
-                        // Get the response content
-                        var content = response.Content.ReadAsStringAsync().Result;
-                        // Return the content
+                // get witness data from a bitcoin transaction
+                var witness = tx.Inputs[0].WitScript;
 
-                        if (content != null) {
-                            dynamic? json = JsonConvert.DeserializeObject(content);
+                IEnumerable<byte[]> pushes = witness.Pushes;
+                if (pushes.Count() >= 5) { // "ord"
 
-                            switch (bcDataProviderType) {
-                                case BcDataProviderType.BlockchainInfo: { // https://blockchain.info/rawtx/167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db
-                                        dynamic? inputs = json?.inputs[0];
-                                        string witness = Convert.ToString(inputs?.witness);
+                    // Convert UTF8 to string
+                    var utf8_inscruption = Encoding.UTF8.GetString(pushes.ElementAt(5));
+                    return utf8_inscruption;
+                }*/
+            }
+            else {
+                // Create a HTTP request
+                using (var request = new HttpRequestMessage()) {
+                    request.Method = HttpMethod.Get;
 
-                                        if (witness == null) {
-                                            throw new Exception(string.Format("Error parsing API response from {0}", bcDataProviderType.ToString()));
-                                        }
-                                        OrdinalData ordinal = DecodeWitnessData(bitcoinTxId, witness);
-                                        return ordinal;
-                                    }
-                                case BcDataProviderType.BlockStream: { // https://blockstream.info/api/tx/167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db
-                                        dynamic? vin = json?.vin[0];
-                                        foreach (string script in vin?.witness) {
+                    request.RequestUri = new Uri(string.Format(bcDataProviderType.Description(), bitcoinTxId));
 
-                                            OrdinalData ordinalData = ParseScriptData(Encoders.Hex.DecodeData(script));
-                                            if (ordinalData != null) {
-                                                return ordinalData;
+                    try {
+                        using (var response = await _httpClient.SendAsync(request)) {
+                            // Get the response content
+                            var content = response.Content.ReadAsStringAsync().Result;
+                            // Return the content
+
+                            if (content != null) {
+                                switch (bcDataProviderType) {
+                                    case BcDataProviderType.BlockchainInfo: { // https://blockchain.info/rawtx/167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db
+                                            BlockchainInfoTxModel? json = JsonConvert.DeserializeObject<BlockchainInfoTxModel>(content);
+                                            Input inputs = json?.inputs[0];
+                                            string witness = Convert.ToString(inputs?.witness);
+
+                                            if (witness == null) {
+                                                throw new Exception(string.Format("Error parsing API response from {0}", bcDataProviderType.ToString()));
                                             }
+                                            OrdinalData ordinal = DecodeWitnessData(bitcoinTxId, witness);
+                                            return ordinal;
                                         }
-                                        break;
-                                    }
-                                default: {
-                                        throw new Exception("Unsupported data provider type " + bcDataProviderType.ToString());
-                                    }
+                                    case BcDataProviderType.BlockStream: { // https://blockstream.info/api/tx/167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db
+                                            BlockStreamInfoTxModel? json = JsonConvert.DeserializeObject<BlockStreamInfoTxModel>(content);
+                                            Vin vin = json?.vin[0];
+                                            List<string> witness = vin?.witness;
+
+                                            if (witness == null) {
+                                                throw new Exception(string.Format("Error parsing API response from {0}", bcDataProviderType.ToString()));
+                                            }
+                                            foreach (string script in witness) {
+
+                                                OrdinalData ordinalData = ParseScriptData(Encoders.Hex.DecodeData(script));
+                                                if (ordinalData != null) {
+                                                    return ordinalData;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    default: {
+                                            throw new Exception("Unsupported data provider type " + bcDataProviderType.ToString());
+                                        }
+                                }
                             }
                         }
                     }
-                }
-                catch (Exception exp) {
-                    throw new Exception("Error requesting API ", exp);
+                    catch (Exception exp) {
+                        throw new Exception("Error requesting API ", exp);
+                    }
                 }
             }
             return null;
@@ -107,7 +119,7 @@ namespace goat.netcore
         /// </summary>
         /// <param name="witnessHex"></param>
         /// <returns></returns>
-        private OrdinalData DecodeWitnessData(string bitcoinTxId, string witnessHex) {
+        private static OrdinalData DecodeWitnessData(string bitcoinTxId, string witnessHex) {
             BitcoinStream stream = new(Encoders.Hex.DecodeData(witnessHex));
 
             if (!stream.ProtocolCapabilities.SupportWitness) {
@@ -130,7 +142,7 @@ namespace goat.netcore
         /// </summary>
         /// <param name="push"></param>
         /// <returns></returns>
-        private OrdinalData ParseScriptData(byte[] push) {
+        private static OrdinalData ParseScriptData(byte[] push) {
             Script script = new(push);
 
             //Debug.WriteLine(script.ToString());
@@ -159,7 +171,7 @@ namespace goat.netcore
                     // Convert UTF8 bytes to string
                     string pushDataString = System.Text.Encoding.UTF8.GetString(op.PushData);
 
-                    if (pushDataString == "ord") { // specification standard to filter out other junk https://docs.ordinals.com/inscriptions.html
+                    if (pushDataString == ORDINAL_HEADER) { // specification standard to filter out other junk https://docs.ordinals.com/inscriptions.html
                         bIsOrdDataRegion = true; // flag
                     }
                     //Debug.WriteLine(op.ToString());
