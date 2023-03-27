@@ -8,12 +8,6 @@ namespace goat.netcore.Ordinal
 {
     public class OrdinalData
     {
-
-        public OrdinalData()
-        {
-
-        }
-
         /// <summary>
         /// text/plain;charset=utf-8
         /// </summary>

@@ -1,9 +1,12 @@
-﻿using goat.netcore.Models;
+﻿using goat.netcore.BitcoinCore;
+using goat.netcore.Models;
 using goat.netcore.Ordinal;
 using NBitcoin;
 using NBitcoin.DataEncoders;
+using NBitcoin.Protocol;
 using NBitcoin.RPC;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
@@ -23,12 +26,36 @@ namespace goat.netcore
         /// </summary>
         private static readonly HttpClient _httpClient = new();
 
+        private BitcoinRpcClient btcCoreRpc = null;
+        public BitcoinRpcClient BTCCoreRPC {
+            get {
+                if (btcCoreRpc == null) {
+                    btcCoreRpc = new BitcoinRpcClient(string.Format(BITCOIN_RPC_URL, BITCOIN_RPC_PORT), BITCOIN_RPC_USERNAME, BITCOIN_RPC_PASSWORD);
+                }
+                return btcCoreRpc;
+            }
+            private set { }
+        }
+
         #region Constants
         /// <summary>
         /// First the string ord is pushed, to disambiguate inscriptions from other uses of envelopes.
         /// </summary>
         private static readonly string ORDINAL_HEADER = "ord";
+
+        private static readonly uint ORDINAL_START_BLOCK_HEIGHT = 772950; // 21th jan 2023 https://blog.chainalysis.com/reports/ordinals-protocol-bitcoin-nfts
+
+        private static readonly string BITCOIN_RPC_URL = "http://127.0.0.1:{0}";
+        private static readonly string BITCOIN_RPC_PASSWORD = "yj837kbGTDJdXyepKScax";
+        private static readonly string BITCOIN_RPC_USERNAME = "";
+        private static readonly int BITCOIN_RPC_PORT = 8332;
         #endregion
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Goat() {
+        }
 
         /// <summary>
         /// Gets the inscription data from a blockchain data provider API

@@ -13,10 +13,6 @@ namespace goat.netcore.Models {
         public string script { get; set; }
         public int index { get; set; }
         public PrevOut prev_out { get; set; }
-
-        public static implicit operator List<object>(Input v) {
-            throw new NotImplementedException();
-        }
     }
 
     public class Out {
