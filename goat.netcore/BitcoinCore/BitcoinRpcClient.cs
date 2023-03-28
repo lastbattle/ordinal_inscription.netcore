@@ -62,7 +62,14 @@ namespace goat.netcore.BitcoinCore {
         #endregion
 
         #region Custom methods
-        public async Task FindTransactionFromBlockNo(uint startblockNumber, string txId) {
+        /// <summary>
+        /// Iterate through every Bitcoin block from 'startblockNumber' and find a specific transaction ID 
+        /// </summary>
+        /// <param name="startblockNumber"></param>
+        /// <param name="txId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<TransactionModel> FindTransactionFromBlockNo(uint startblockNumber, string txId) {
             uint bestBlockCount = await GetBlockCountAsync();
 
             if (bestBlockCount < startblockNumber)
@@ -70,18 +77,23 @@ namespace goat.netcore.BitcoinCore {
 
             for (uint i = startblockNumber; i < bestBlockCount; i++) {
                 string iBlockHash = await GetBlockHash(i);
-                Block block = await GetBlock(iBlockHash);
+                BlockModel block = await GetBlock(iBlockHash);
 
                 if (block.tx.Contains(txId)) 
                 {
                     string rawTx = await GetRawTransaction(txId, block.hash);
-                    Debug.WriteLine(rawTx);
+                    //Debug.WriteLine(rawTx);
 
                     JObject decodeTx = await DecodeRawTransaction(rawTx);
-                    Debug.WriteLine(decodeTx);
+                    TransactionModel transactionModel = JsonConvert.DeserializeObject<TransactionModel>(decodeTx["result"].ToString());
+
+                    //Debug.WriteLine(transactionModel);
+
+                    return transactionModel;
                 }
-                Debug.WriteLine("Current block ID: " + i);
+                //Debug.WriteLine("Current block ID: " + i);
             }
+            return null;
         }
         #endregion
 
@@ -130,11 +142,11 @@ namespace goat.netcore.BitcoinCore {
         /// </summary>
         /// <param name="blockHeight"></param>
         /// <returns></returns>
-        public async Task<Block> GetBlock(string blockhash) {
+        public async Task<BlockModel> GetBlock(string blockhash) {
             JObject response = await SendRequestAsync("getblock", new object[] { blockhash });
 
             // deserialize json to object
-            Block Block = JsonConvert.DeserializeObject<Block>(response["result"].ToString());
+            BlockModel Block = JsonConvert.DeserializeObject<BlockModel>(response["result"].ToString());
             return Block;
         }
 

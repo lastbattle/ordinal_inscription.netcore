@@ -1,6 +1,6 @@
 ﻿
 namespace goat.netcore.Models.BitcoinCore {
-    public class Block {
+    public class BlockModel {
         public string hash { get; set; }
         public int confirmations { get; set; }
         public uint height { get; set; }

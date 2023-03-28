@@ -1,5 +1,6 @@
 ﻿using goat.netcore.BitcoinCore;
 using goat.netcore.Models;
+using goat.netcore.Models.BitcoinCore;
 using goat.netcore.Ordinal;
 using NBitcoin;
 using NBitcoin.DataEncoders;
@@ -24,7 +25,7 @@ namespace goat.netcore
         /// <summary>
         /// The HTTP client for API requests
         /// </summary>
-        private static readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient = new();
 
         private BitcoinRpcClient btcCoreRpc = null;
         public BitcoinRpcClient BTCCoreRPC {
@@ -63,23 +64,24 @@ namespace goat.netcore
         /// <param name="bitcoinTxId"></param>
         /// <param name="bcDataProviderType"></param>
         /// <returns></returns>
-        public static async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, BcDataProviderType bcDataProviderType) {
+        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, BcDataProviderType bcDataProviderType) {
             if (bcDataProviderType == BcDataProviderType.BitcoinCoreRPC) {
                 //  Gets the inscription data from a locally hosted Bitcoin core node using RPC
 
-                // query nBitcoin with a bitcoin transaction id
-                /*var tx = NBitcoin.Transaction.Parse(bitcoinTxId, Network.Main);
+                TransactionModel txModel = await BTCCoreRPC.FindTransactionFromBlockNo(782675, "167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
+                if (txModel == null) {
+                    throw new Exception(string.Format("transaction not found from block number {0} onwards.", ORDINAL_START_BLOCK_HEIGHT));
+                } else if (txModel.vin.Count == 0) {
+                    throw new Exception(string.Format("No witness data found in the transaction {0}.", txModel.txid));
+                }
 
-                // get witness data from a bitcoin transaction
-                var witness = tx.Inputs[0].WitScript;
-
-                IEnumerable<byte[]> pushes = witness.Pushes;
-                if (pushes.Count() >= 5) { // "ord"
-
-                    // Convert UTF8 to string
-                    var utf8_inscruption = Encoding.UTF8.GetString(pushes.ElementAt(5));
-                    return utf8_inscruption;
-                }*/
+                foreach (string script in txModel.vin[0].txinwitness) {
+                    OrdinalData ordinalData = ParseScriptData(Encoders.Hex.DecodeData(script));
+                    if (ordinalData != null) {
+                        return ordinalData;
+                    }
+                }
+                throw new Exception(string.Format("No ordinal data found in the transaction {0}.", txModel.txid));
             }
             else {
                 // Create a HTTP request
@@ -109,7 +111,7 @@ namespace goat.netcore
                                         }
                                     case BcDataProviderType.BlockStream: { // https://blockstream.info/api/tx/167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db
                                             BlockStreamInfoTxModel? json = JsonConvert.DeserializeObject<BlockStreamInfoTxModel>(content);
-                                            Vin vin = json?.vin[0];
+                                            Models.Vin vin = json?.vin[0];
                                             List<string> witness = vin?.witness;
 
                                             if (witness == null) {
@@ -177,7 +179,7 @@ namespace goat.netcore
             bool bIsOrdDataRegion = false;
             OrdinalData data = new();
 
-            foreach (Op op in script.ToOps()) {
+            foreach (Op op in script.ToOps()) { // https://developer.bitcoin.org/reference/transactions.html
                 // OP_1 indicates that the next push contains the content type
                 // and OP_0 indicates that subsequent data pushes contain the content itself.
                 // Multiple data pushes must be used for large inscriptions, as one of taproot's few restrictions is that individual data pushes may not be larger than 520 bytes.

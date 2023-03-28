@@ -17,24 +17,24 @@ namespace goat.netcore.test
             Goat g = new Goat();
  
             AsyncContext.Run(async () => {
-                OrdinalData ordinal = await Goat.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BitcoinCoreRPC);
+                OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BitcoinCoreRPC);
                 if (ordinal != null) {
                     Debug.WriteLine(ordinal);
                 }
-                
-                await g.BTCCoreRPC.FindTransactionFromBlockNo(782675, "167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
             });
         }
 
         [TestMethod]
         public void Test_BlockchainInfoRPC() {
+            Goat g = new Goat();
+
             AsyncContext.Run(async () => {
-                OrdinalData ordinal = await Goat.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BlockchainInfo);
+                OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BlockchainInfo);
 
                 Assert.IsNotNull(ordinal, "ordinal for blockchainInfo is null");
             });
             AsyncContext.Run(async () => {
-                OrdinalData ordinal = await Goat.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BlockStream);
+                OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BlockStream);
 
                 Assert.IsNotNull(ordinal, "ordinal for blockstream is null");
             });
