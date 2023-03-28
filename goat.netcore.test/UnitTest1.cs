@@ -14,31 +14,35 @@ namespace goat.netcore.test
 
         [TestMethod]
         public void Test_RandomDataSource() {
-            Goat g = new Goat();
+            Goat g = new();
 
             AsyncContext.Run(async () => {
                 OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
-                if (ordinal != null) {
-                    Debug.WriteLine(ordinal);
-                }
+
+                Assert.IsNotNull(ordinal, "ordinal for random is null");
+            });
+            // attempt 2 to test for cache.
+            AsyncContext.Run(async () => {
+                OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
+
+                Assert.IsNotNull(ordinal, "ordinal for random is null");
             });
         }
 
         [TestMethod]
         public void Test_BitcoinCoreRPC() {
-            Goat g = new Goat();
+            Goat g = new();
  
             AsyncContext.Run(async () => {
                 OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BitcoinCoreRPC);
-                if (ordinal != null) {
-                    Debug.WriteLine(ordinal);
-                }
+
+                Assert.IsNotNull(ordinal, "ordinal for bitcoin core is null");
             });
         }
 
         [TestMethod]
         public void Test_BlockchainInfoRPC() {
-            Goat g = new Goat();
+            Goat g = new();
 
             AsyncContext.Run(async () => {
                 OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BlockchainInfo);

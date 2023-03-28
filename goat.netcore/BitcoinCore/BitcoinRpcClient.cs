@@ -18,6 +18,8 @@ namespace goat.netcore.BitcoinCore {
         private readonly string _rpcUrl;
         private readonly HttpClient _httpClient;
 
+        private static readonly Dictionary<uint, BlockModel> blockTxKeyValuePairs = new Dictionary<uint, BlockModel>();
+
         /// <summary>
         /// Constructor for the BitcoinRpcClient
         /// </summary>
@@ -75,11 +77,27 @@ namespace goat.netcore.BitcoinCore {
             if (bestBlockCount < startblockNumber)
                 throw new Exception("start block number is lower than the current best block in the bitcoin core node. bestblockCount = " + bestBlockCount);
 
-            for (uint i = startblockNumber; i < bestBlockCount; i++) {
-                string iBlockHash = await GetBlockHash(i);
-                BlockModel block = await GetBlock(iBlockHash);
+            // First attempt to find the transaction to see if its already indexed.
 
-                if (block.tx.Contains(txId)) 
+
+            // Then find the transaction block by block if none available
+            for (uint i = startblockNumber; i < bestBlockCount; i++) {
+                BlockModel block;
+
+                if (!blockTxKeyValuePairs.ContainsKey(i)) {
+                    string iBlockHash = await GetBlockHash(i);
+                    block = await GetBlock(iBlockHash);
+
+                    lock (blockTxKeyValuePairs) {
+                        if (!blockTxKeyValuePairs.ContainsKey(i)) // check again
+                            blockTxKeyValuePairs.Add(i, block);
+                    }
+                } else {
+                    // this block is already synced
+                    block = blockTxKeyValuePairs[i];
+                }
+
+                if (block != null && block.tx.Contains(txId)) 
                 {
                     string rawTx = await GetRawTransaction(txId, block.hash);
                     //Debug.WriteLine(rawTx);
@@ -91,8 +109,9 @@ namespace goat.netcore.BitcoinCore {
 
                     return transactionModel;
                 }
-                //Debug.WriteLine("Current block ID: " + i);
+                Debug.WriteLine("Current block ID: " + i);
             }
+
             return null;
         }
         #endregion

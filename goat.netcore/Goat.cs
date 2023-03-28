@@ -102,7 +102,7 @@ namespace goat.netcore
             if (bcDataProviderType == BcDataProviderType.BitcoinCoreRPC) {
                 //  Gets the inscription data from a locally hosted Bitcoin core node using RPC
 
-                TransactionModel txModel = await BTCCoreRPC.FindTransactionFromBlockNo(782675, "167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
+                TransactionModel txModel = await BTCCoreRPC.FindTransactionFromBlockNo(ORDINAL_START_BLOCK_HEIGHT, bitcoinTxId);
                 if (txModel == null) {
                     throw new Exception(string.Format("transaction not found from block number {0} onwards.", ORDINAL_START_BLOCK_HEIGHT));
                 } else if (txModel.vin.Count == 0) {
