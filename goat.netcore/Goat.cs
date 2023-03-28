@@ -60,6 +60,8 @@ namespace goat.netcore
 
         /// <summary>
         /// Selects a random blockchain data provider auto-magically and returns the OrdinalData
+        /// Provides higher level of censorship resistance with more redundancy at random,
+        /// with bitcoin core nodes being trusted first (if available)
         /// </summary>
         /// <param name="bitcoinTxId"></param>
         /// <returns></returns>
@@ -72,19 +74,17 @@ namespace goat.netcore
             catch {}
 
             if (ordinal == null) {
-                // attempt the blockchain.info API
-                try {
-                    ordinal = await QueryOrdinalData(bitcoinTxId, BcDataProviderType.BlockchainInfo);
-                }
-                catch { }
                 // loop through all BcDataProviderType enums types and select a random blockchain data provider
-                Random rng = new Random();
+                Random rng = new();
                 var shuffledList = ((BcDataProviderType[])Enum.GetValues(typeof(BcDataProviderType))).OrderBy(a => rng.Next()).ToList();
                 foreach (BcDataProviderType provider in shuffledList) {
                     if (provider == BcDataProviderType.BitcoinCoreRPC) {
                         continue;
                     }
-                    ordinal = await QueryOrdinalData(bitcoinTxId, provider);
+                    try {
+                        ordinal = await QueryOrdinalData(bitcoinTxId, provider);
+                    }
+                    catch { }
                     if (ordinal != null)
                         break;
                 }
