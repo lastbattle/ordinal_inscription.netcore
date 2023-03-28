@@ -13,6 +13,18 @@ namespace goat.netcore.test
     public class UnitTest1 {
 
         [TestMethod]
+        public void Test_RandomDataSource() {
+            Goat g = new Goat();
+
+            AsyncContext.Run(async () => {
+                OrdinalData ordinal = await g.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db");
+                if (ordinal != null) {
+                    Debug.WriteLine(ordinal);
+                }
+            });
+        }
+
+        [TestMethod]
         public void Test_BitcoinCoreRPC() {
             Goat g = new Goat();
  

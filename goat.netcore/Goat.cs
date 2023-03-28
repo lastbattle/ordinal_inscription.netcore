@@ -59,6 +59,40 @@ namespace goat.netcore
         }
 
         /// <summary>
+        /// Selects a random blockchain data provider auto-magically and returns the OrdinalData
+        /// </summary>
+        /// <param name="bitcoinTxId"></param>
+        /// <returns></returns>
+        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId) {
+            // attempt the bitcoin core RPC first
+            OrdinalData ordinal = null;
+            try {
+                ordinal = await QueryOrdinalData(bitcoinTxId, BcDataProviderType.BitcoinCoreRPC);
+            }
+            catch {}
+
+            if (ordinal == null) {
+                // attempt the blockchain.info API
+                try {
+                    ordinal = await QueryOrdinalData(bitcoinTxId, BcDataProviderType.BlockchainInfo);
+                }
+                catch { }
+                // loop through all BcDataProviderType enums types and select a random blockchain data provider
+                Random rng = new Random();
+                var shuffledList = ((BcDataProviderType[])Enum.GetValues(typeof(BcDataProviderType))).OrderBy(a => rng.Next()).ToList();
+                foreach (BcDataProviderType provider in shuffledList) {
+                    if (provider == BcDataProviderType.BitcoinCoreRPC) {
+                        continue;
+                    }
+                    ordinal = await QueryOrdinalData(bitcoinTxId, provider);
+                    if (ordinal != null)
+                        break;
+                }
+            }
+            return ordinal;
+        }
+
+        /// <summary>
         /// Gets the inscription data from a blockchain data provider API
         /// </summary>
         /// <param name="bitcoinTxId"></param>
