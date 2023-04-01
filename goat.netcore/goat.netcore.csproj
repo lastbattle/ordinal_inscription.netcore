@@ -10,4 +10,10 @@
     <PackageReference Include="NBitcoin" Version="7.0.25" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Enums\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Enums\" />
+  </ItemGroup>
 </Project>

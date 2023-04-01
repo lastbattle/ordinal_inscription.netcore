@@ -1,4 +1,5 @@
 ﻿using goat.netcore.BitcoinCore;
+using goat.netcore.Enums;
 using goat.netcore.Models;
 using goat.netcore.Models.BitcoinCore;
 using goat.netcore.Ordinal;
@@ -38,6 +39,10 @@ namespace goat.netcore
             private set { }
         }
 
+        #region Etc
+        private Random rng = new();
+        #endregion
+
         #region Constants
         /// <summary>
         /// First the string ord is pushed, to disambiguate inscriptions from other uses of envelopes.
@@ -75,7 +80,6 @@ namespace goat.netcore
 
             if (ordinal == null) {
                 // loop through all BcDataProviderType enums types and select a random blockchain data provider
-                Random rng = new();
                 var shuffledList = ((BcDataProviderType[])Enum.GetValues(typeof(BcDataProviderType))).OrderBy(a => rng.Next()).ToList();
                 foreach (BcDataProviderType provider in shuffledList) {
                     if (provider == BcDataProviderType.BitcoinCoreRPC) {

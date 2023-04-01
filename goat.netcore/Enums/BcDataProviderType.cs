@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore {
+namespace goat.netcore.Enums {
 
     /// <summary>
     /// Blockchain data provider types

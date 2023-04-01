@@ -1,4 +1,5 @@
 using goat.netcore.BitcoinCore;
+using goat.netcore.Enums;
 using goat.netcore.Ordinal;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
