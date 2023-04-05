@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore.Models.BitcoinCore {
+namespace BitcoinOrdinal.netcore.Models.BitcoinCore {
 
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class TransactionModel {

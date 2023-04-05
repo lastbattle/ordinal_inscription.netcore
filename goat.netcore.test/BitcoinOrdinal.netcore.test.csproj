@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\goat.netcore\goat.netcore.csproj" />
+    <ProjectReference Include="..\goat.netcore\BitcoinOrdinal.netcore.csproj" />
   </ItemGroup>
 
 </Project>

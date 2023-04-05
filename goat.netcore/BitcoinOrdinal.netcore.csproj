@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="NBitcoin" Version="7.0.25" />
+    <PackageReference Include="YamlDotNet" Version="13.0.2" />
   </ItemGroup>
 
 </Project>

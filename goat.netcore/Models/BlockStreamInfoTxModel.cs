@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore.Models {
+namespace BitcoinOrdinal.netcore.Models {
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Prevout {
         public string scriptpubkey { get; set; }

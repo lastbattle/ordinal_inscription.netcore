@@ -1,4 +1,4 @@
-﻿using goat.netcore.Models.BitcoinCore;
+﻿using BitcoinOrdinal.netcore.Models.BitcoinCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore.BitcoinCore {
+namespace BitcoinOrdinal.netcore.BitcoinCore {
 
     /// <summary>
     /// The bitcoin RPC wrapper client class.

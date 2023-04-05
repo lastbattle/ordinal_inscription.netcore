@@ -1,7 +1,7 @@
-﻿using goat.netcore.BitcoinCore;
-using goat.netcore.Models;
-using goat.netcore.Models.BitcoinCore;
-using goat.netcore.Ordinal;
+﻿using BitcoinOrdinal.netcore.BitcoinCore;
+using BitcoinOrdinal.netcore.Models;
+using BitcoinOrdinal.netcore.Models.BitcoinCore;
+using BitcoinOrdinal.netcore.Ordinal;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 using NBitcoin.Protocol;
@@ -18,9 +18,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.Unicode;
 
-namespace goat.netcore
+namespace BitcoinOrdinal.netcore
 {
-    public class Goat {
+    public class BitcoinOrdinal {
 
         /// <summary>
         /// The HTTP client for API requests
@@ -55,7 +55,7 @@ namespace goat.netcore
         /// <summary>
         /// Constructor
         /// </summary>
-        public Goat() {
+        public BitcoinOrdinal() {
         }
 
         /// <summary>
@@ -64,12 +64,13 @@ namespace goat.netcore
         /// with bitcoin core nodes being trusted first (if available)
         /// </summary>
         /// <param name="bitcoinTxId"></param>
+        /// <param name="expectedBlockId">The expected block number where the txId is currently in, to optimize for query time. -1 = automatically detect</param>
         /// <returns></returns>
-        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId) {
+        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, int expectedBlockId = -1) {
             // attempt the bitcoin core RPC first
             OrdinalData ordinal = null;
             try {
-                ordinal = await QueryOrdinalData(bitcoinTxId, BcDataProviderType.BitcoinCoreRPC);
+                ordinal = await QueryOrdinalData(bitcoinTxId, BcDataProviderType.BitcoinCoreRPC, expectedBlockId);
             }
             catch {}
 
@@ -97,12 +98,16 @@ namespace goat.netcore
         /// </summary>
         /// <param name="bitcoinTxId"></param>
         /// <param name="bcDataProviderType"></param>
+        /// <param name="expectedBlockId">The expected block number where the txId is currently in, to optimize for query time. -1 = automatically detect</param>
         /// <returns></returns>
-        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, BcDataProviderType bcDataProviderType) {
+        public async Task<OrdinalData> QueryOrdinalData(string bitcoinTxId, BcDataProviderType bcDataProviderType, int expectedBlockId = -1) {
             if (bcDataProviderType == BcDataProviderType.BitcoinCoreRPC) {
                 //  Gets the inscription data from a locally hosted Bitcoin core node using RPC
 
-                TransactionModel txModel = await BTCCoreRPC.FindTransactionFromBlockNo(ORDINAL_START_BLOCK_HEIGHT, bitcoinTxId);
+                if (expectedBlockId < -1)
+                    throw new Exception("Expected block number cannot be below -1.");
+
+                TransactionModel txModel = await BTCCoreRPC.FindTransactionFromBlockNo(expectedBlockId == -1 ? ORDINAL_START_BLOCK_HEIGHT : (uint) expectedBlockId, bitcoinTxId);
                 if (txModel == null) {
                     throw new Exception(string.Format("transaction not found from block number {0} onwards.", ORDINAL_START_BLOCK_HEIGHT));
                 } else if (txModel.vin.Count == 0) {
@@ -232,7 +237,7 @@ namespace goat.netcore
                     if (op.PushData == null)
                         continue;
                     // Convert UTF8 bytes to string
-                    string pushDataString = System.Text.Encoding.UTF8.GetString(op.PushData);
+                    string pushDataString = Encoding.UTF8.GetString(op.PushData);
 
                     if (pushDataString == ORDINAL_HEADER) { // specification standard to filter out other junk https://docs.ordinals.com/inscriptions.html
                         bIsOrdDataRegion = true; // flag
@@ -240,7 +245,7 @@ namespace goat.netcore
                     //Debug.WriteLine(op.ToString());
                 }
                 else if ((byte)op.Code == 9) {
-                    string pushDataString = System.Text.Encoding.UTF8.GetString(op.PushData);
+                    string pushDataString = Encoding.UTF8.GetString(op.PushData);
 
                     data.MetadataType = pushDataString; // set
                 }

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "goat.netcore", "goat.netcore.csproj", "{45FE20E2-84FC-4398-BC78-3D430F4EA125}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinOrdinal.netcore", "BitcoinOrdinal.netcore.csproj", "{45FE20E2-84FC-4398-BC78-3D430F4EA125}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "goat.netcore.test", "..\goat.netcore.test\goat.netcore.test.csproj", "{45E8D803-A44D-47F2-BD31-DEDDD00E892A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinOrdinal.netcore.test", "..\goat.netcore.test\BitcoinOrdinal.netcore.test.csproj", "{45E8D803-A44D-47F2-BD31-DEDDD00E892A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore {
+namespace BitcoinOrdinal.netcore {
 
     public static class BcDataProviderTypeExtension {
 

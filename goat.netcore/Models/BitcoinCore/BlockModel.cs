@@ -1,5 +1,5 @@
 ﻿
-namespace goat.netcore.Models.BitcoinCore {
+namespace BitcoinOrdinal.netcore.Models.BitcoinCore {
     public class BlockModel {
         public string hash { get; set; }
         public int confirmations { get; set; }

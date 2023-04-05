@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace goat.netcore.Ordinal
+namespace BitcoinOrdinal.netcore.Ordinal
 {
     public class OrdinalData
     {
