@@ -1,4 +1,5 @@
-﻿using BitcoinOrdinal.netcore.BitcoinCore;
+
+using BitcoinOrdinal.netcore.BitcoinCore;
 using BitcoinOrdinal.netcore.Models;
 using BitcoinOrdinal.netcore.Models.BitcoinCore;
 using BitcoinOrdinal.netcore.Ordinal;
@@ -38,6 +39,10 @@ namespace BitcoinOrdinal.netcore
             private set { }
         }
 
+        #region Etc
+        private Random rng = new();
+        #endregion
+
         #region Constants
         /// <summary>
         /// First the string ord is pushed, to disambiguate inscriptions from other uses of envelopes.
@@ -76,7 +81,6 @@ namespace BitcoinOrdinal.netcore
 
             if (ordinal == null) {
                 // loop through all BcDataProviderType enums types and select a random blockchain data provider
-                Random rng = new();
                 var shuffledList = ((BcDataProviderType[])Enum.GetValues(typeof(BcDataProviderType))).OrderBy(a => rng.Next()).ToList();
                 foreach (BcDataProviderType provider in shuffledList) {
                     if (provider == BcDataProviderType.BitcoinCoreRPC) {
