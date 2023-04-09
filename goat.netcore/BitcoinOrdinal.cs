@@ -32,9 +32,6 @@ namespace BitcoinOrdinal.netcore
         private BitcoinRpcClient btcCoreRpc = null;
         public BitcoinRpcClient BTCCoreRPC {
             get {
-                if (btcCoreRpc == null) {
-                    btcCoreRpc = new BitcoinRpcClient(string.Format(BITCOIN_RPC_URL, BITCOIN_RPC_PORT), BITCOIN_RPC_USERNAME, BITCOIN_RPC_PASSWORD);
-                }
                 return btcCoreRpc;
             }
             private set { }
@@ -52,16 +49,19 @@ namespace BitcoinOrdinal.netcore
 
         private static readonly uint ORDINAL_START_BLOCK_HEIGHT = 772950; // 21th jan 2023 https://blog.chainalysis.com/reports/ordinals-protocol-bitcoin-nfts
 
-        private static readonly string BITCOIN_RPC_URL = "http://127.0.0.1:{0}";
-        private static readonly string BITCOIN_RPC_PASSWORD = "yj837kbGTDJdXyepKScax";
-        private static readonly string BITCOIN_RPC_USERNAME = "";
-        private static readonly int BITCOIN_RPC_PORT = 8332;
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
         public BitcoinOrdinal() {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public BitcoinOrdinal(string BITCOIN_RPC_URL, int BITCOIN_RPC_PORT, string BITCOIN_RPC_USERNAME, string BITCOIN_RPC_PASSWORD) {
+            btcCoreRpc = new BitcoinRpcClient(string.Format("http://{0}:{1}", BITCOIN_RPC_URL, BITCOIN_RPC_PORT), BITCOIN_RPC_USERNAME, BITCOIN_RPC_PASSWORD);
         }
 
         /// <summary>

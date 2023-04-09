@@ -4,21 +4,25 @@ A simple C# .netcore library for fetching inscribed data on the bitcoin blockcha
 ## Usage
 #### Query via local Bitcoin Core RPC
 ```
- OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BitcoinCoreRPC, <optional blockId to speed up query>);
+BitcoinOrdinal btcordinal = new("127.0.0.1", 8332, "<username>", "<password>");
+OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BitcoinCoreRPC, <optional blockId to speed up query>);
 ```
 
 #### Query via local Blockchain.info API
 ```
+BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BlockchainInfo);
 ```
 
 #### Query via local Blockstream.info API
 ```
+BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BlockStream);
 ```
 
 #### Query GOAT bittorrent tracker links
 ```
+BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData...
 GoatModel goatordinal = GoatModel.DeserializeGoatData(ordinal);
 ```

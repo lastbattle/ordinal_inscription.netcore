@@ -56,7 +56,7 @@ namespace BitcoinOrdinal.netcore.test
         /// </summary>
         [TestMethod]
         public void Test_BitcoinCoreRPC() {
-            BitcoinOrdinal btcordinal = new();
+            BitcoinOrdinal btcordinal = new("127.0.0.1", 8332, "", "");
 
             AsyncContext.Run((async () => {
                 OrdinalData ordinal = await btcordinal.QueryOrdinalData("167b24f615b9c35c39064e314adc4fdb802ed1050ecf649ce887859ee3c5f6db", BcDataProviderType.BitcoinCoreRPC, 782675);
