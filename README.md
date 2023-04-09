@@ -20,6 +20,12 @@ BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BlockStream);
 ```
 
+#### Recursively query a random data source until one is found.
+```
+BitcoinOrdinal btcordinal = new("127.0.0.1", 8332, "<username>", "<password>");
+OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>");
+```
+
 #### Query GOAT bittorrent tracker links
 ```
 BitcoinOrdinal btcordinal = new();
