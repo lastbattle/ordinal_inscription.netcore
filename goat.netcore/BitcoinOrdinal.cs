@@ -41,7 +41,7 @@ namespace BitcoinOrdinal.netcore
         }
 
         #region Etc
-        private Random rng = new();
+        private readonly Random rng = new();
         #endregion
 
         #region Constants
@@ -246,6 +246,11 @@ namespace BitcoinOrdinal.netcore
                  * OP_UNKNOWN(0xc1) 7f692257b2331233b5705ce9c682be8719 OP_UNKNOWN(0xff) 0
                 */
                 //Debug.WriteLine(op.ToString());
+                //Debug.WriteLine(op.PushData != null ? Encoding.UTF8.GetString(op.PushData).ToString() : "");
+                /*if (op.PushData != null && Encoding.UTF8.GetString(op.PushData) == "text/plain;charset=utf-8") 
+                {
+
+                }*/
 
                 if ((byte)op.Code == 3) {
                     if (op.PushData == null)
@@ -258,7 +263,7 @@ namespace BitcoinOrdinal.netcore
                     }
                     //Debug.WriteLine(op.ToString());
                 }
-                else if ((byte)op.Code == 9) {
+                else if ((byte)op.Code == 9 || (byte)op.Code == 24) {
                     string pushDataString = Encoding.UTF8.GetString(op.PushData);
 
                     data.MetadataType = pushDataString; // set
