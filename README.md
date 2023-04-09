@@ -8,13 +8,13 @@ BitcoinOrdinal btcordinal = new("127.0.0.1", 8332, "<username>", "<password>");
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BitcoinCoreRPC, <optional blockId to speed up query>);
 ```
 
-#### Query via local Blockchain.info API
+#### Query via https://Blockchain.info API
 ```
 BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BlockchainInfo);
 ```
 
-#### Query via local Blockstream.info API
+#### Query via https://Blockstream.info API
 ```
 BitcoinOrdinal btcordinal = new();
 OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDataProviderType.BlockStream);
@@ -23,7 +23,7 @@ OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", BcDa
 #### Recursively query a random data source until one is found.
 ```
 BitcoinOrdinal btcordinal = new("127.0.0.1", 8332, "<username>", "<password>");
-OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>");
+OrdinalData ordinal = await btcordinal.QueryOrdinalData("<transaction ID>", <optional blockId to speed up query>);
 ```
 
 #### Query GOAT bittorrent tracker links
@@ -46,7 +46,7 @@ Inscription content is entirely on-chain, stored in taproot script-path spend sc
 
 Since taproot script spends can only be made from existing taproot outputs, inscriptions are made using a two-phase commit/reveal procedure. First, in the commit transaction, a taproot output committing to a script containing the inscription content is created. Second, in the reveal transaction, the output created by the commit transaction is spent, revealing the inscription content on-chain.
 
-Inscription content is serialized using data pushes within unexecuted conditionals, called "envelopes". Envelopes consist of an OP_FALSE OP_IF Åc OP_ENDIF wrapping any number of data pushes. Because envelopes are effectively no-ops, they do not change the semantics of the script in which they are included, and can be combined with any other locking script.
+Inscription content is serialized using data pushes within unexecuted conditionals, called "envelopes". Envelopes consist of an OP_FALSE OP_IF ¬Åc OP_ENDIF wrapping any number of data pushes. Because envelopes are effectively no-ops, they do not change the semantics of the script in which they are included, and can be combined with any other locking script.
 
 A text inscription containing the string "Hello, world!" is serialized as follows:
 
