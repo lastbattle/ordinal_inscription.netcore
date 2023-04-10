@@ -19,6 +19,7 @@ namespace BitcoinOrdinal.netcore {
         [Description("https://blockstream.info/api/tx/{0}")]
         BlockStream, // https://github.com/Blockstream/esplora/blob/master/API.md
 
+        [Description("http://127.0.0.1:{0}")]
         BitcoinCoreRPC,
     }
 }

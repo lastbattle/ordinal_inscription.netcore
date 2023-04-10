@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\goat.netcore\BitcoinOrdinal.netcore.csproj" />
+    <ProjectReference Include="..\ordinal_inscription.netcore\BitcoinOrdinal.netcore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -58,7 +58,7 @@ namespace BitcoinOrdinal.netcore
         }
 
         /// <summary>
-        /// Constructor
+        /// Constructor with bitcoin RPC connection parameters
         /// </summary>
         public BitcoinOrdinal(string BITCOIN_RPC_URL, int BITCOIN_RPC_PORT, string BITCOIN_RPC_USERNAME, string BITCOIN_RPC_PASSWORD) {
             btcCoreRpc = new BitcoinRpcClient(string.Format("http://{0}:{1}", BITCOIN_RPC_URL, BITCOIN_RPC_PORT), BITCOIN_RPC_USERNAME, BITCOIN_RPC_PASSWORD);
@@ -272,12 +272,12 @@ namespace BitcoinOrdinal.netcore
                     if (op.PushData == null)
                         continue;
 
-                    // combine arrayMetadata array with op.PushData
-                    byte[] ret = new byte[arrayMetadata.Length + op.PushData.Length];
-                    Buffer.BlockCopy(arrayMetadata, 0, ret, 0, arrayMetadata.Length);
-                    Buffer.BlockCopy(op.PushData, 0, ret, arrayMetadata.Length, op.PushData.Length);
+                    // combine the old arrayMetadata array with op.PushData
+                    byte[] newArray = new byte[arrayMetadata.Length + op.PushData.Length];
+                    Buffer.BlockCopy(arrayMetadata, 0, newArray, 0, arrayMetadata.Length);
+                    Buffer.BlockCopy(op.PushData, 0, newArray, arrayMetadata.Length, op.PushData.Length);
 
-                    arrayMetadata = ret;
+                    arrayMetadata = newArray;
                 }
             }
             if (arrayMetadata.Length > 0) {

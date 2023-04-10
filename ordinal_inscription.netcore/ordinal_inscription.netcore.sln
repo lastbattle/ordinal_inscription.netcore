@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33417.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinOrdinal.netcore", "BitcoinOrdinal.netcore.csproj", "{45FE20E2-84FC-4398-BC78-3D430F4EA125}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinOrdinal.netcore.test", "..\goat.netcore.test\BitcoinOrdinal.netcore.test.csproj", "{45E8D803-A44D-47F2-BD31-DEDDD00E892A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BitcoinOrdinal.netcore.test", "..\ordinal_inscription.netcore.test\BitcoinOrdinal.netcore.test.csproj", "{45E8D803-A44D-47F2-BD31-DEDDD00E892A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
